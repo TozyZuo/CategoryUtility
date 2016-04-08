@@ -20,12 +20,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Demo/main.m"
-            timestampString = "481691611.594327"
+            timestampString = "481796541.237118"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "382"
-            endingLineNumber = "382"
-            landmarkName = "TestWeakProperty()"
+            startingLineNumber = "222"
+            endingLineNumber = "222"
+            landmarkName = "main()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -35,13 +35,77 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Demo/main.m"
-            timestampString = "481691554.587774"
+            filePath = "CategoryUtility/CategoryUtility.m"
+            timestampString = "481796287.723275"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "172"
-            endingLineNumber = "172"
-            landmarkName = "main()"
+            startingLineNumber = "76"
+            endingLineNumber = "76"
+            landmarkName = "-dealloc"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[TZObserver dealloc]"
+                  moduleName = "Demo_mrc"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Tozy/Private/GitHub/CategoryUtility/CategoryUtility/CategoryUtility.m"
+                  timestampString = "481798286.62566"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "76"
+                  endingLineNumber = "76"
+                  offsetFromSymbolStart = "146">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[TZObserver dealloc]"
+                  moduleName = "Demo_mrc"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Tozy/Private/GitHub/CategoryUtility/CategoryUtility/CategoryUtility.m"
+                  timestampString = "481798286.625792"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "76"
+                  endingLineNumber = "76"
+                  offsetFromSymbolStart = "154">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Demo/main.m"
+            timestampString = "481798109.796598"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "141"
+            endingLineNumber = "141"
+            landmarkName = "-setweakObject1:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Demo/main.m"
+            timestampString = "481797465.641258"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "440"
+            endingLineNumber = "440"
+            landmarkName = "TestWeakProperty()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -52,11 +116,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Demo/main.m"
-            timestampString = "481691863.767921"
+            timestampString = "481797530.50469"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "438"
-            endingLineNumber = "438"
+            startingLineNumber = "447"
+            endingLineNumber = "447"
             landmarkName = "TestWeakProperty()"
             landmarkType = "7">
          </BreakpointContent>
@@ -68,45 +132,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Demo/main.m"
-            timestampString = "481692047.353561"
+            timestampString = "481798114.053826"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "140"
-            endingLineNumber = "140"
-            landmarkName = "-setweakObject1:"
+            startingLineNumber = "186"
+            endingLineNumber = "186"
+            landmarkName = "-setweakObject2:"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[NSObject(Model) setweakObject1:]"
-                  moduleName = "Demo_mrc"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Tozy/Desktop/Demo/Demo/main.m"
-                  timestampString = "481692047.356309"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "140"
-                  endingLineNumber = "140"
-                  offsetFromSymbolStart = "1045">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__34-[NSObject(Model) setweakObject1:]_block_invoke"
-                  moduleName = "Demo_mrc"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Tozy/Desktop/Demo/Demo/main.m"
-                  timestampString = "481692047.35645"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "140"
-                  endingLineNumber = "140"
-                  offsetFromSymbolStart = "16">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

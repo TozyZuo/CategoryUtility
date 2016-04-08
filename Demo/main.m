@@ -20,12 +20,6 @@
 #define Release(obj)    [(obj) release]
 #endif
 
-#ifdef TZWeakExtension
-#define WeakExtensionEnable 1
-#else
-#define WeakExtensionEnable 0
-#endif
-
 //#define NSLog(...)
 
 #pragma mark - Declaration
@@ -94,7 +88,7 @@ typedef struct {
 @Synthesize_nonatomic__copy_(NSObject_Model, NSObject *, copyObject1);
 @Synthesize_nonatomic__copy_(NSObject_Model, NSObject *, copyObject2);
 @Synthesize_nonatomic__copy_(NSObject_Model,  MyBlock  , block);
-//@Synthesize_nonatomic__weak_(NSObject_Model, NSObject *, weakObject1);
+@Synthesize_nonatomic__weak_(NSObject_Model, NSObject *, weakObject1);
 @Synthesize_nonatomic__weak_(NSObject_Model, NSObject *, weakObject2);
 @Synthesize_nonatomic_assign(NSObject_Model,    int    , intProperty);
 @Synthesize_nonatomic_assign(NSObject_Model,  CGPoint  , pointProperty);
@@ -104,7 +98,7 @@ typedef struct {
 
 @Synthesize_nonatomic_assign_object(NSObject_Model, NSObject *, assignObject);
 
-#if 1
+#if 0
 
 void *NSObject_ModelweakObject1Key = &NSObject_ModelweakObject1Key;
 - (NSObject *)weakObject1
@@ -115,37 +109,87 @@ void *NSObject_ModelweakObject1Key = &NSObject_ModelweakObject1Key;
 {
     NSObject * var = self.weakObject1;
     if (![var isEqual:weakObject1]) {
-        NSMutableArray *observerList = var.observerList;
-        TZWEAK_KEYWORD TZObserver *removeObserver = nil;
-        for (TZObserver *observer in observerList) {
-            if ([observer.objectOwner isEqual:self]) {
-                observer.objectOwner = nil;
-                removeObserver = observer;
-                break;
-            }
-        }
-        [observerList removeObject:removeObserver];
+        /* remove old var's observation. */
+        NSString *propertyKey = [NSString stringWithUTF8String:"weakObject1"];
+        [[var.ownersObserver.objectOwners objectForKey:self] removeObject:propertyKey];
         /* It's 'weak'. No need to release var. */
-        
         if (weakObject1) {
-            NSMutableArray *observerList = weakObject1.observerList;
-            if (!observerList) {
-                observerList = [[NSMutableArray alloc] init];
-                weakObject1.observerList = observerList;
-                TZRelease(observerList);
+            /* object -> observer -> owner */
+            TZObserver *ownersObserver = weakObject1.ownersObserver;
+            if (!ownersObserver) {
+                ownersObserver = [[TZObserver alloc] init];
+                weakObject1.ownersObserver = ownersObserver;
+                TZRelease(ownersObserver);
             }
-            __block TZObserver *observer = [[TZObserver alloc] init];
-            observer.objectOwner = self;
-            TZWEAK_KEYWORD __typeof(self) weakSelf = self;
-            [observer setDeallocBlock:^{
-                weakSelf.weakObject1 = nil;
-            }];
-            [observerList addObject:observer];
-            TZRelease(observer);
+            NSMutableArray *observeProperties = [ownersObserver.objectOwners objectForKey:self];
+            if (!observeProperties) {
+                observeProperties = [[NSMutableArray alloc] init];
+                [ownersObserver.objectOwners setObject:observeProperties forKey:self];
+                TZRelease(observeProperties);
+            }
+            NSAssert(![observeProperties containsObject:propertyKey], @"Shouldn't crash");
+            [observeProperties addObject:propertyKey];
+            /* owner -> observer -> object */
+            TZObserver *observersObserver = self.observersObserver;
+            if (!observersObserver) {
+                observersObserver = [[TZObserver alloc] init];
+                observersObserver.owner = self;
+                self.observersObserver = observersObserver;
+                TZRelease(observersObserver);
+            }
+            if (![observersObserver.observers containsObject:ownersObserver]) {
+                [observersObserver.observers addObject:ownersObserver];
+            }
         }
         objc_setAssociatedObject(self, NSObject_ModelweakObject1Key, weakObject1, OBJC_ASSOCIATION_ASSIGN);
     }
 }
+
+void *NSObject_ModelweakObject2Key = &NSObject_ModelweakObject2Key;
+- (NSObject *)weakObject2
+{
+    return objc_getAssociatedObject(self, NSObject_ModelweakObject2Key);
+}
+- (void)setweakObject2:(NSObject *)weakObject2
+{
+    NSObject * var = self.weakObject2;
+    if (![var isEqual:weakObject2]) {
+        /* remove old var's observation. */
+        NSString *propertyKey = [NSString stringWithUTF8String:"weakObject2"];
+        [[var.ownersObserver.objectOwners objectForKey:self] removeObject:propertyKey];
+        /* It's 'weak'. No need to release var. */
+        if (weakObject2) {
+            /* object -> observer -> owner */
+            TZObserver *ownersObserver = weakObject2.ownersObserver;
+            if (!ownersObserver) {
+                ownersObserver = [[TZObserver alloc] init];
+                weakObject2.ownersObserver = ownersObserver;
+                TZRelease(ownersObserver);
+            }
+            NSMutableArray *observeProperties = [ownersObserver.objectOwners objectForKey:self];
+            if (!observeProperties) {
+                observeProperties = [[NSMutableArray alloc] init];
+                [ownersObserver.objectOwners setObject:observeProperties forKey:self];
+                TZRelease(observeProperties);
+            }
+            NSAssert(![observeProperties containsObject:propertyKey], @"Shouldn't crash");
+            [observeProperties addObject:propertyKey];
+            /* owner -> observer -> object */
+            TZObserver *observersObserver = self.observersObserver;
+            if (!observersObserver) {
+                observersObserver = [[TZObserver alloc] init];
+                observersObserver.owner = self;
+                self.observersObserver = observersObserver;
+                TZRelease(observersObserver);
+            }
+            if (![observersObserver.observers containsObject:ownersObserver]) {
+                [observersObserver.observers addObject:ownersObserver];
+            }
+        }
+        objc_setAssociatedObject(self, NSObject_ModelweakObject2Key, weakObject2, OBJC_ASSOCIATION_ASSIGN);
+    }
+}
+
 #endif
 
 @end
@@ -396,6 +440,7 @@ void TestWeakProperty(NSObject *obj)
     obj.weakObject2 = weakObjectRef;
 
     NSLog(@"1 %@ 2 %@", obj.weakObject1, obj.weakObject2);
+
 
     Release(weakObjectRef);
 
@@ -653,7 +698,7 @@ void *NSObject_DemocopyPropertyKey = &NSObject_DemocopyPropertyKey;
 
 
 //@Synthesize_nonatomic_weak(NSObject_Demo, NSObject *, weakProperty);
-#if WeakExtensionEnable
+#if defined(TZWeakExtension)
 void *NSObject_DemoweakPropertyKey = &NSObject_DemoweakPropertyKey;
 
 - (NSObject *)weakProperty
@@ -678,7 +723,7 @@ void *NSObject_DemoweakPropertyKey = &NSObject_DemoweakPropertyKey;
     }
 }
 
-#else
+#else // defined(TZWeakExtension)
 
 void *NSObject_DemoweakPropertyKey = &NSObject_DemoweakPropertyKey;
 
@@ -691,39 +736,41 @@ void *NSObject_DemoweakPropertyKey = &NSObject_DemoweakPropertyKey;
 {
     NSObject * var = self.weakProperty;
     if (![var isEqual:weakProperty]) {
-        // remove last value's observer
-        NSMutableArray *observerList = var.observerList;
-        TZWEAK_KEYWORD TZObserver *removeObserver = nil;
-        for (TZObserver *observer in observerList) {
-            if ([observer.objectOwner isEqual:self]) {
-                observer.objectOwner = nil;
-                removeObserver = observer;
-                break;
-            }
-        }
-        [observerList removeObject:removeObserver];
-        /* It's weak. No need to release var. */
-        
+        /* remove old var's observation. */
+        NSString *propertyKey = [NSString stringWithUTF8String:""];
+        [[var.ownersObserver.objectOwners objectForKey:self] removeObject:propertyKey];
+        /* It's 'weak'. No need to release var. */
+
         if (weakProperty) {
-            NSMutableArray *observerList = weakProperty.observerList;
-            if (!observerList) {
-                observerList = [[NSMutableArray alloc] init];
-                weakProperty.observerList = observerList;
-                TZRelease(observerList);
+            /* object -> observer -> owner */
+            TZObserver *ownersObserver = weakProperty.ownersObserver;
+            if (!ownersObserver) {
+                ownersObserver = [[TZObserver alloc] init];
+                weakProperty.ownersObserver = ownersObserver;
+                TZRelease(ownersObserver);
             }
-            __block TZObserver *observer = [[TZObserver alloc] init];
-            observer.objectOwner = self;
-            TZWEAK_KEYWORD __typeof(self) weakSelf = self;
-            [observer setDeallocBlock:^{
-                weakSelf.weakProperty = nil;
-            }];
-            [observerList addObject:observer];
-            TZRelease(observer);
+            NSMutableArray *observeProperties = [ownersObserver.objectOwners objectForKey:self];
+            if (!observeProperties) {
+                observeProperties = [[NSMutableArray alloc] init];
+                [ownersObserver.objectOwners setObject:observeProperties forKey:self];
+                TZRelease(observeProperties);
+            }
+            NSAssert(![observeProperties containsObject:propertyKey], @"Shouldn't crash");
+            [observeProperties addObject:propertyKey];
+            /* owner -> observer -> object */
+            TZObserver *observersObserver = self.observersObserver;
+            if (!observersObserver) {
+                observersObserver = [[TZObserver alloc] init];
+                observersObserver.owner = self;
+                self.observersObserver = observersObserver;
+                TZRelease(observersObserver);
+            }
+            [observersObserver.observers addObject:ownersObserver];
         }
         objc_setAssociatedObject(self, NSObject_DemoweakPropertyKey, weakProperty, OBJC_ASSOCIATION_ASSIGN);
     }
 }
-#endif
+#endif // defined(TZWeakExtension)
 
 
 //@Synthesize_nonatomic_assign(NSObject_Demo, int, assignProperty);

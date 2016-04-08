@@ -1,8 +1,8 @@
 //
 //  CategoryUtility_WeakExtension.h
 //
-//  Created by TozyZuo on 16/4/5.
-//  Copyright © 2016年 TozyZuo. All rights reserved.
+//  Created by TozyZuo.
+//  Copyright © 2014年 TozyZuo. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

@@ -1,8 +1,8 @@
 //
 //  CategoryUtility.h
 //
-//  Created by TozyZuo on 16/4/1.
-//  Copyright © 2016年 TozyZuo. All rights reserved.
+//  Created by TozyZuo.
+//  Copyright © 2014年 TozyZuo. All rights reserved.
 //
 
 
@@ -227,13 +227,17 @@ void *prefix##varName##Key = &prefix##varName##Key;\
         Property_nonatomic_weak(varType, varName)
 
 @interface TZObserver: NSObject
-@property (nonatomic, assign) NSObject *objectOwner;
+@property (nonatomic, strong) NSMapTable<NSObject *, NSMutableArray *> *objectOwners;
+@property (nonatomic, strong) NSHashTable<TZObserver *> *observers;
+@property (nonatomic, assign) NSObject *owner;
 //@Property__nonatomic__weak_(NSObject *, objectOwner);
-@property (nonatomic, copy) void (^deallocBlock)();
+//@property (nonatomic, copy) void (^deallocBlock)();
 @end
 
 @interface NSObject (TZObserver)
-@Property_nonatomic_strong(NSMutableArray *, observerList);
+@Property_nonatomic_strong(TZObserver *, ownersObserver);
+@Property_nonatomic_strong(TZObserver *, observersObserver);
+//@Property_nonatomic_strong(NSMutableArray *, observerList);
 @end
 
 /*
@@ -251,35 +255,39 @@ void *prefix##varName##Key = &prefix##varName##Key;\
 }\
 - (void)set##varName:(varType)varName\
 {\
-    NSObject * var = self.varName;\
+    NSObject *var = self.varName;\
     if (![var isEqual:varName]) {\
-        NSMutableArray *observerList = var.observerList;\
-        TZWEAK_KEYWORD TZObserver *removeObserver = nil;\
-        for (TZObserver *observer in observerList) {\
-            if ([observer.objectOwner isEqual:self]) {\
-                observer.objectOwner = nil;\
-                removeObserver = observer;\
-                break;\
-            }\
-        }\
-        [observerList removeObject:removeObserver];\
+        /* remove old var's observation. */\
+        NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
+        [[var.ownersObserver.objectOwners objectForKey:self] removeObject:propertyKey];\
         /* It's 'weak'. No need to release var. */\
-\
         if (varName) {\
-            NSMutableArray *observerList = varName.observerList;\
-            if (!observerList) {\
-                observerList = [[NSMutableArray alloc] init];\
-                varName.observerList = observerList;\
-                TZRelease(observerList);\
+            /* object -> observer -> owner */\
+            TZObserver *ownersObserver = varName.ownersObserver;\
+            if (!ownersObserver) {\
+                ownersObserver = [[TZObserver alloc] init];\
+                varName.ownersObserver = ownersObserver;\
+                TZRelease(ownersObserver);\
             }\
-            __block TZObserver *observer = [[TZObserver alloc] init];\
-            observer.objectOwner = self;\
-            TZWEAK_KEYWORD __typeof(self) weakSelf = self;\
-            [observer setDeallocBlock:^{\
-                weakSelf.varName = nil;\
-            }];\
-            [observerList addObject:observer];\
-            TZRelease(observer);\
+            NSMutableArray *observeProperties = [ownersObserver.objectOwners objectForKey:self];\
+            if (!observeProperties) {\
+                observeProperties = [[NSMutableArray alloc] init];\
+                [ownersObserver.objectOwners setObject:observeProperties forKey:self];\
+                TZRelease(observeProperties);\
+            }\
+            NSAssert(![observeProperties containsObject:propertyKey], @"Shouldn't crash");\
+            [observeProperties addObject:propertyKey];\
+            /* owner -> observer -> object */\
+            TZObserver *observersObserver = self.observersObserver;\
+            if (!observersObserver) {\
+                observersObserver = [[TZObserver alloc] init];\
+                observersObserver.owner = self;\
+                self.observersObserver = observersObserver;\
+                TZRelease(observersObserver);\
+            }\
+            if (![observersObserver.observers containsObject:ownersObserver]) {\
+                [observersObserver.observers addObject:ownersObserver];\
+            }\
         }\
         objc_setAssociatedObject(self, prefix##varName##Key, varName, OBJC_ASSOCIATION_ASSIGN);\
     }\
