@@ -189,19 +189,36 @@ void *prefix##varName##Key = &prefix##varName##Key;\
         Synthesize_nonatomic_copy(prefix, varType, varName)
 
 
-/*
- *                             own
- *       object(master) → → → → → → → → → object(slave)
- *                     ↖                 ↙
- *                       ↖             ↙
- *                 observe ↖         ↙ own
- *               (reference) ↖     ↙
- *                             ↖ ↙
- *                           observer
+/**********************************************************************
+ *
+ *                    ref                ref
+ *        owner → → → → → → →  self  → → → → → → object
+ *           ↖↘                 ↑↓                 ↗↓
+ *             ↖↘        master ↑↓               ↗  ↓
+ *               ↖↘             ↑↓             ↗    ↓
+ *                 ↖↘ owner     ↑↓           ↗      ↓
+ *             ref   ↖↘         ↑↓         ↗        ↓
+ *           owners[]  ↖↘       ↑↓       ↗  object  ↓
+ *                       ↖↘     ↑↓own  ↗            ↓
+ *                         ↖↘   ↑↓   ↗              ↓
+ *                           ↖↘ ↑↓ ↗                ↓
+ *                           observer → → → → → → observer
+ *                                        ref
+ *                                 objectObservers[]
  *
  *
- *  [slave dealloc] → [observer dealloc] → master.slaveProperty = nil .
- */
+ *                 [self dealloc]
+ *                    ↓
+ *               [observer dealloc]
+ *                    ↓
+ *              owner.property = nil
+ *                   &&         ↑   prevent from crashing
+ *      [object.observer.owners removeObject:self]
+ *                   &&         ↑   prevent from crashing
+ *  [owner.observer.objectObservers removeObject:self]
+ *
+ **********************************************************************/
+
 /*
  Property_nonatomic_weak
  
@@ -227,17 +244,19 @@ void *prefix##varName##Key = &prefix##varName##Key;\
         Property_nonatomic_weak(varType, varName)
 
 @interface TZObserver: NSObject
-@property (nonatomic, strong) NSMapTable<NSObject *, NSMutableArray *> *objectOwners;
-@property (nonatomic, strong) NSHashTable<TZObserver *> *observers;
-@property (nonatomic, assign) NSObject *owner;
-//@Property__nonatomic__weak_(NSObject *, objectOwner);
-//@property (nonatomic, copy) void (^deallocBlock)();
+/*
+    {
+        owner: properties[...]
+        ...
+    }
+ */
+@property (nonatomic, strong) NSMapTable<NSObject *, NSMutableArray *> *owners;
+@property (nonatomic, strong) NSHashTable<TZObserver *> *objectObservers;
+@property (nonatomic, assign) NSObject *master;
 @end
 
 @interface NSObject (TZObserver)
-@Property_nonatomic_strong(TZObserver *, ownersObserver);
-@Property_nonatomic_strong(TZObserver *, observersObserver);
-//@Property_nonatomic_strong(NSMutableArray *, observerList);
+@Property_nonatomic_strong(TZObserver *, observer);
 @end
 
 /*
@@ -259,34 +278,35 @@ void *prefix##varName##Key = &prefix##varName##Key;\
     if (![var isEqual:varName]) {\
         /* remove old var's observation. */\
         NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
-        [[var.ownersObserver.objectOwners objectForKey:self] removeObject:propertyKey];\
+        [[var.observer.owners objectForKey:self] removeObject:propertyKey];\
         /* It's 'weak'. No need to release var. */\
+\
         if (varName) {\
             /* object -> observer -> owner */\
-            TZObserver *ownersObserver = varName.ownersObserver;\
-            if (!ownersObserver) {\
-                ownersObserver = [[TZObserver alloc] init];\
-                varName.ownersObserver = ownersObserver;\
-                TZRelease(ownersObserver);\
+            TZObserver *objectObserver = varName.observer;\
+            if (!objectObserver) {\
+                objectObserver = [[TZObserver alloc] init];\
+                varName.observer = objectObserver;\
+                TZRelease(objectObserver);\
             }\
-            NSMutableArray *observeProperties = [ownersObserver.objectOwners objectForKey:self];\
+            NSMutableArray *observeProperties = [objectObserver.owners objectForKey:self];\
             if (!observeProperties) {\
                 observeProperties = [[NSMutableArray alloc] init];\
-                [ownersObserver.objectOwners setObject:observeProperties forKey:self];\
+                [objectObserver.owners setObject:observeProperties forKey:self];\
                 TZRelease(observeProperties);\
             }\
             NSAssert(![observeProperties containsObject:propertyKey], @"Shouldn't crash");\
             [observeProperties addObject:propertyKey];\
             /* owner -> observer -> object */\
-            TZObserver *observersObserver = self.observersObserver;\
-            if (!observersObserver) {\
-                observersObserver = [[TZObserver alloc] init];\
-                observersObserver.owner = self;\
-                self.observersObserver = observersObserver;\
-                TZRelease(observersObserver);\
+            TZObserver *selfObserver = self.observer;\
+            if (!selfObserver) {\
+                selfObserver = [[TZObserver alloc] init];\
+                selfObserver.master = self;\
+                self.observer = selfObserver;\
+                TZRelease(selfObserver);\
             }\
-            if (![observersObserver.observers containsObject:ownersObserver]) {\
-                [observersObserver.observers addObject:ownersObserver];\
+            if (![selfObserver.objectObservers containsObject:objectObserver]) {\
+                [selfObserver.objectObservers addObject:objectObserver];\
             }\
         }\
         objc_setAssociatedObject(self, prefix##varName##Key, varName, OBJC_ASSOCIATION_ASSIGN);\

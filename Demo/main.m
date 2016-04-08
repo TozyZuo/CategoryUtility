@@ -20,7 +20,7 @@
 #define Release(obj)    [(obj) release]
 #endif
 
-//#define NSLog(...)
+#define NSLog(...)
 
 #pragma mark - Declaration
 
@@ -98,100 +98,6 @@ typedef struct {
 
 @Synthesize_nonatomic_assign_object(NSObject_Model, NSObject *, assignObject);
 
-#if 0
-
-void *NSObject_ModelweakObject1Key = &NSObject_ModelweakObject1Key;
-- (NSObject *)weakObject1
-{
-    return objc_getAssociatedObject(self, NSObject_ModelweakObject1Key);
-}
-- (void)setweakObject1:(NSObject *)weakObject1
-{
-    NSObject * var = self.weakObject1;
-    if (![var isEqual:weakObject1]) {
-        /* remove old var's observation. */
-        NSString *propertyKey = [NSString stringWithUTF8String:"weakObject1"];
-        [[var.ownersObserver.objectOwners objectForKey:self] removeObject:propertyKey];
-        /* It's 'weak'. No need to release var. */
-        if (weakObject1) {
-            /* object -> observer -> owner */
-            TZObserver *ownersObserver = weakObject1.ownersObserver;
-            if (!ownersObserver) {
-                ownersObserver = [[TZObserver alloc] init];
-                weakObject1.ownersObserver = ownersObserver;
-                TZRelease(ownersObserver);
-            }
-            NSMutableArray *observeProperties = [ownersObserver.objectOwners objectForKey:self];
-            if (!observeProperties) {
-                observeProperties = [[NSMutableArray alloc] init];
-                [ownersObserver.objectOwners setObject:observeProperties forKey:self];
-                TZRelease(observeProperties);
-            }
-            NSAssert(![observeProperties containsObject:propertyKey], @"Shouldn't crash");
-            [observeProperties addObject:propertyKey];
-            /* owner -> observer -> object */
-            TZObserver *observersObserver = self.observersObserver;
-            if (!observersObserver) {
-                observersObserver = [[TZObserver alloc] init];
-                observersObserver.owner = self;
-                self.observersObserver = observersObserver;
-                TZRelease(observersObserver);
-            }
-            if (![observersObserver.observers containsObject:ownersObserver]) {
-                [observersObserver.observers addObject:ownersObserver];
-            }
-        }
-        objc_setAssociatedObject(self, NSObject_ModelweakObject1Key, weakObject1, OBJC_ASSOCIATION_ASSIGN);
-    }
-}
-
-void *NSObject_ModelweakObject2Key = &NSObject_ModelweakObject2Key;
-- (NSObject *)weakObject2
-{
-    return objc_getAssociatedObject(self, NSObject_ModelweakObject2Key);
-}
-- (void)setweakObject2:(NSObject *)weakObject2
-{
-    NSObject * var = self.weakObject2;
-    if (![var isEqual:weakObject2]) {
-        /* remove old var's observation. */
-        NSString *propertyKey = [NSString stringWithUTF8String:"weakObject2"];
-        [[var.ownersObserver.objectOwners objectForKey:self] removeObject:propertyKey];
-        /* It's 'weak'. No need to release var. */
-        if (weakObject2) {
-            /* object -> observer -> owner */
-            TZObserver *ownersObserver = weakObject2.ownersObserver;
-            if (!ownersObserver) {
-                ownersObserver = [[TZObserver alloc] init];
-                weakObject2.ownersObserver = ownersObserver;
-                TZRelease(ownersObserver);
-            }
-            NSMutableArray *observeProperties = [ownersObserver.objectOwners objectForKey:self];
-            if (!observeProperties) {
-                observeProperties = [[NSMutableArray alloc] init];
-                [ownersObserver.objectOwners setObject:observeProperties forKey:self];
-                TZRelease(observeProperties);
-            }
-            NSAssert(![observeProperties containsObject:propertyKey], @"Shouldn't crash");
-            [observeProperties addObject:propertyKey];
-            /* owner -> observer -> object */
-            TZObserver *observersObserver = self.observersObserver;
-            if (!observersObserver) {
-                observersObserver = [[TZObserver alloc] init];
-                observersObserver.owner = self;
-                self.observersObserver = observersObserver;
-                TZRelease(observersObserver);
-            }
-            if (![observersObserver.observers containsObject:ownersObserver]) {
-                [observersObserver.observers addObject:ownersObserver];
-            }
-        }
-        objc_setAssociatedObject(self, NSObject_ModelweakObject2Key, weakObject2, OBJC_ASSOCIATION_ASSIGN);
-    }
-}
-
-#endif
-
 @end
 
 #pragma mark
@@ -213,8 +119,13 @@ int main(int argc, const char * argv[]) {
 
         long long i = 0;
 
-        while (i++ < (1 << 20)) {
-            TestWeakProperty(obj);
+        while (i++ < (1 << 19)) {
+            if (i % 10000 == 0) {
+                printf("%lld\n", i);
+            }
+            @autoreleasepool {
+                TestWeakProperty(obj);
+            }
         }
 
         printf("%lld", i);
@@ -479,7 +390,7 @@ void TestWeakProperty(NSObject *obj)
 
     NSLog(@"obj1.1 %@ obj1.2 %@ obj2.1 %@ obj2.2 %@", obj.weakObject1, obj.weakObject2, obj2.weakObject1, obj2.weakObject2);
 
-    // Owner destroyed, check destroyed time.(Referenced by multiple properties)
+    // Owner destroyed, check destroyed time.
     obj2 = [[MyObject alloc] init];
 
     NSLog(@"%@", obj2);
@@ -491,6 +402,41 @@ void TestWeakProperty(NSObject *obj)
     NSLog(@"%@", obj2.weakObject1);
 
     Release(obj2);
+    Release(weakObjectRef);
+
+    // Owner destroyed, check destroyed time.(Referenced by multiple properties)
+    obj2 = [[MyObject alloc] init];
+
+    NSLog(@"%@", obj2);
+
+    weakObjectRef = [[MyObject alloc] init];
+
+    obj2.weakObject1 = weakObjectRef;
+    obj2.weakObject2 = weakObjectRef;
+
+    NSLog(@"1 %@ 2 %@", obj2.weakObject1, obj2.weakObject2);
+
+    Release(obj2);
+    Release(weakObjectRef);
+
+    // Owners destroyed, check destroyed time.
+    obj2 = [[MyObject alloc] init];
+    NSObject *obj3 = [[MyObject alloc] init];
+
+    NSLog(@"2 %@ 3 %@", obj2, obj3);
+
+    weakObjectRef = [[MyObject alloc] init];
+
+    obj2.weakObject1 = weakObjectRef;
+    obj3.weakObject1 = weakObjectRef;
+
+    NSLog(@"2 %@ 3 %@", obj2.weakObject1, obj3.weakObject1);
+
+    Release(obj2);
+
+    NSLog(@"3 %@", obj3.weakObject1);
+
+    Release(obj3);
     Release(weakObjectRef);
 }
 
@@ -645,6 +591,7 @@ void TestAssignProperty(NSObject *obj)
 
 #pragma mark - Demo
 
+#if 0
 @interface NSObject (Demo)
 
 //@Property_nonatomic_strong(NSObject *, strongProperty);
@@ -796,3 +743,4 @@ void *NSObject_DemoassignPropertyKey = &NSObject_DemoassignPropertyKey;
 }
 
 @end
+#endif // Demo
