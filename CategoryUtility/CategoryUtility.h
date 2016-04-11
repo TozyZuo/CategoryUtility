@@ -11,7 +11,7 @@
 
  --------- INTRODUCTION ---------
  
- Worked for both ARC and MRC.
+ Worked for both ARC and MRC. Support KVO.
 
  USAGE:
 
@@ -132,7 +132,12 @@ void *prefix##varName##Key = &prefix##varName##Key;\
 }\
 - (void)set##varName:(varType)varName\
 {\
-    objc_setAssociatedObject(self, prefix##varName##Key, varName, OBJC_ASSOCIATION_RETAIN_NONATOMIC);\
+    NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
+    [self willChangeValueForKey:propertyKey];\
+    if (![varName isEqual:self.varName]) {\
+        objc_setAssociatedObject(self, prefix##varName##Key, varName, OBJC_ASSOCIATION_RETAIN_NONATOMIC);\
+    }\
+    [self didChangeValueForKey:propertyKey];\
 }
 
 
@@ -174,15 +179,20 @@ void *prefix##varName##Key = &prefix##varName##Key;\
 }\
 - (void)set##varName:(varType)varName\
 {\
-    if (varName && ![varName respondsToSelector:@selector(copy)]) {\
-        NSLog(@"-[%@ copy] need to be implemented.", [varName class]);\
-        return;\
+    NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
+    [self willChangeValueForKey:propertyKey];\
+    if (![varName isEqual:self.varName]) {\
+        if (varName && ![varName respondsToSelector:@selector(copy)]) {\
+            NSLog(@"-[%@ copy] need to be implemented.", [varName class]);\
+            return;\
+        }\
+        if (varName && ![varName respondsToSelector:@selector(copyWithZone:)]) {\
+            NSLog(@"-[%@ copyWithZone:] need to be implemented.", [varName class]);\
+            return;\
+        }\
+        objc_setAssociatedObject(self, prefix##varName##Key, [varName copy], OBJC_ASSOCIATION_RETAIN_NONATOMIC);\
     }\
-    if (varName && ![varName respondsToSelector:@selector(copyWithZone:)]) {\
-        NSLog(@"-[%@ copyWithZone:] need to be implemented.", [varName class]);\
-        return;\
-    }\
-    objc_setAssociatedObject(self, prefix##varName##Key, [varName copy], OBJC_ASSOCIATION_RETAIN_NONATOMIC);\
+    [self didChangeValueForKey:propertyKey];\
 }
 
 #define Synthesize_nonatomic__copy_(prefix, varType, varName)\
@@ -274,15 +284,15 @@ void *prefix##varName##Key = &prefix##varName##Key;\
 }\
 - (void)set##varName:(varType)varName\
 {\
+    NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
+    [self willChangeValueForKey:propertyKey];\
     NSObject *var = self.varName;\
     if (![var isEqual:varName]) {\
         /* remove old var's observation. */\
-        NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
         [[var.observer.owners objectForKey:self] removeObject:propertyKey];\
-        /* It's 'weak'. No need to release var. */\
 \
         if (varName) {\
-            /* object -> observer -> owner */\
+            /* object.observer -> owner */\
             TZObserver *objectObserver = varName.observer;\
             if (!objectObserver) {\
                 objectObserver = [[TZObserver alloc] init];\
@@ -297,7 +307,8 @@ void *prefix##varName##Key = &prefix##varName##Key;\
             }\
             NSAssert(![observeProperties containsObject:propertyKey], @"Shouldn't crash");\
             [observeProperties addObject:propertyKey];\
-            /* owner -> observer -> object */\
+\
+            /* owner.observer -> object.observer */\
             TZObserver *selfObserver = self.observer;\
             if (!selfObserver) {\
                 selfObserver = [[TZObserver alloc] init];\
@@ -311,6 +322,7 @@ void *prefix##varName##Key = &prefix##varName##Key;\
         }\
         objc_setAssociatedObject(self, prefix##varName##Key, varName, OBJC_ASSOCIATION_ASSIGN);\
     }\
+    [self didChangeValueForKey:propertyKey];\
 }
 
 #define Synthesize_nonatomic__weak_(prefix, varType, varName)\
@@ -359,7 +371,10 @@ void *prefix##varName##Key = &prefix##varName##Key;\
 - (void)set##varName:(varType)varName\
 {\
     NSData *data = [[NSData alloc] initWithBytes:&varName length:sizeof(varType)];\
+    NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
+    [self willChangeValueForKey:propertyKey];\
     objc_setAssociatedObject(self, prefix##varName##Key, data, OBJC_ASSOCIATION_RETAIN_NONATOMIC);\
+    [self didChangeValueForKey:propertyKey];\
     TZRelease(data);\
 }
 
@@ -380,7 +395,10 @@ void *prefix##varName##Key = &prefix##varName##Key;\
 - (void)set##varName:(varType)varName\
 {\
     NSData *data = [[NSData alloc] initWithBytes:&varName length:sizeof(varType)];\
+    NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
+    [self willChangeValueForKey:propertyKey];\
     objc_setAssociatedObject(self, prefix##varName##Key, data, OBJC_ASSOCIATION_RETAIN_NONATOMIC);\
+    [self didChangeValueForKey:propertyKey];\
     TZRelease(data);\
 }
 

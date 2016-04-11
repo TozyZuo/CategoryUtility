@@ -47,14 +47,18 @@ void *prefix##varName##Key = &prefix##varName##Key;\
 }\
 - (void)set##varName:(varType)varName\
 {\
+    NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
+    [self willChangeValueForKey:propertyKey];\
     NSObject * var = self.varName;\
     if (![var isEqual:varName]) {\
         TZWeakContainer *weakContainer = objc_getAssociatedObject(self, prefix##varName##Key);\
         if (!weakContainer) {\
             weakContainer = [[TZWeakContainer alloc] init];\
             objc_setAssociatedObject(self, prefix##varName##Key, weakContainer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);\
+            TZRelease(weakContainer);\
         }\
         weakContainer.object = varName;\
     }\
+    [self didChangeValueForKey:propertyKey];\
 }
 

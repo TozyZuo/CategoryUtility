@@ -20,7 +20,7 @@
 #define Release(obj)    [(obj) release]
 #endif
 
-#define NSLog(...)
+//#define NSLog(...)
 
 #pragma mark - Declaration
 
@@ -50,6 +50,11 @@ typedef void (^MyBlock)();
 #if !__has_feature(objc_arc)
     [super dealloc];
 #endif
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+    NSLog(@"object:%@, keyPath:%@, change:%@", object, keyPath, change);
 }
 
 @end
@@ -107,6 +112,7 @@ void TestCopyProperty(NSObject *obj);
 void TestWeakProperty(NSObject *obj);
 void TestAssignProperty(NSObject *obj);
 void TestWeakExtensionProperty(NSObject *obj);
+void TestKVO(NSObject *obj);
 
 #pragma mark - Main
 
@@ -117,24 +123,23 @@ int main(int argc, const char * argv[]) {
 
         NSLog(@"obj %@", obj);
 
-        long long i = 0;
+//        long long i = 0;
+//        while (i++ < (1 << 19)) {
+//            if (i % 10000 == 0) {
+//                printf("%lldn", i);
+//            }
+//            @autoreleasepool {
+//                TestWeakProperty(obj);
+//            }
+//        }
+//        printf("%lld", i);
 
-        while (i++ < (1 << 19)) {
-            if (i % 10000 == 0) {
-                printf("%lld\n", i);
-            }
-            @autoreleasepool {
-                TestWeakProperty(obj);
-            }
-        }
-
-        printf("%lld", i);
-
-//        TestStrongProperty(obj);
-//        TestCopyProperty(obj);
-//        TestWeakProperty(obj);
-//        TestAssignProperty(obj);
-//        TestWeakExtensionProperty(obj);
+        TestStrongProperty(obj);
+        TestCopyProperty(obj);
+        TestWeakProperty(obj);
+        TestAssignProperty(obj);
+        TestWeakExtensionProperty(obj);
+        TestKVO(obj);
 
         NSLog(@"%s", obj.strProperty);
 
@@ -587,6 +592,71 @@ void TestAssignProperty(NSObject *obj)
 //    *ptr = 10;
 
     [obj.assignObject log]; // Crash risk
+}
+
+void TestKVO(NSObject *obj)
+{
+    MyObject *myObject = [[MyObject alloc] init];
+    NSKeyValueObservingOptions options = NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld;
+
+    // Strong property KVO test
+    [myObject addObserver:myObject forKeyPath:@"strongObject1" options:options context:NULL];
+
+    myObject.strongObject1 = nil;
+
+    MyObject *strongObject = [[MyObject alloc] init];
+
+    NSLog(@"%@", strongObject);
+
+    myObject.strongObject1 = strongObject;
+
+    Release(strongObject);
+
+    strongObject = [[MyObject alloc] init];
+
+    NSLog(@"%@", strongObject);
+
+    myObject.strongObject1 = strongObject;
+    myObject.strongObject1 = strongObject;
+
+    Release(strongObject);
+    myObject.strongObject1 = nil;
+
+    [myObject removeObserver:myObject forKeyPath:@"strongObject1"];
+
+
+    // Weak property KVO test
+    [myObject addObserver:myObject forKeyPath:@"weakObject1" options:options context:NULL];
+
+    myObject.weakObject1 = nil;
+
+    MyObject *weakObject = [[MyObject alloc] init];
+
+    NSLog(@"%@", weakObject);
+
+    myObject.weakObject1 = weakObject;
+
+    Release(weakObject);
+
+    weakObject = [[MyObject alloc] init];
+
+    NSLog(@"%@", weakObject);
+
+    myObject.weakObject1 = weakObject;
+    myObject.weakObject1 = weakObject;
+
+    Release(weakObject);
+
+    [myObject removeObserver:myObject forKeyPath:@"weakObject1"];
+
+    // Assign property KVO test
+    [myObject addObserver:myObject forKeyPath:@"intProperty" options:options context:NULL];
+
+    myObject.intProperty = 0;
+    myObject.intProperty = 1;
+    myObject.intProperty = 1;
+
+    [myObject removeObserver:myObject forKeyPath:@"intProperty"];
 }
 
 #pragma mark - Demo
