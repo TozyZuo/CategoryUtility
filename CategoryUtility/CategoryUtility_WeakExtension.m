@@ -2,7 +2,6 @@
 //  CategoryUtility_WeakExtension.m
 //
 //  Created by TozyZuo.
-//  Copyright © 2014年 TozyZuo. All rights reserved.
 //
 
 #import "CategoryUtility_WeakExtension.h"

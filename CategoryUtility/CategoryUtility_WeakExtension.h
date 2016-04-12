@@ -2,8 +2,21 @@
 //  CategoryUtility_WeakExtension.h
 //
 //  Created by TozyZuo.
-//  Copyright © 2014年 TozyZuo. All rights reserved.
 //
+
+/*
+ *************************************************************************
+
+ --------- INTRODUCTION ---------
+
+ Support weak(id, block). 
+ 
+ Better performance. 
+ 
+ ARC only.
+
+ *************************************************************************
+ */
 
 #import <Foundation/Foundation.h>
 #import "CategoryUtility.h"
@@ -22,7 +35,7 @@
 
 
 @interface TZWeakContainer : NSObject
-@property (nonatomic, weak) NSObject *object;
+@property (nonatomic, weak) id object;
 @end
 
 
@@ -49,7 +62,7 @@ void *prefix##varName##Key = &prefix##varName##Key;\
 {\
     NSString *propertyKey = [NSString stringWithUTF8String:#varName];\
     [self willChangeValueForKey:propertyKey];\
-    NSObject * var = self.varName;\
+    id var = self.varName;\
     if (![var isEqual:varName]) {\
         TZWeakContainer *weakContainer = objc_getAssociatedObject(self, prefix##varName##Key);\
         if (!weakContainer) {\

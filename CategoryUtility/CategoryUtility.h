@@ -2,16 +2,14 @@
 //  CategoryUtility.h
 //
 //  Created by TozyZuo.
-//  Copyright © 2014年 TozyZuo. All rights reserved.
 //
 
 
-/*
- *************************************************************************
+/**************************************************************************
 
  --------- INTRODUCTION ---------
  
- Worked for both ARC and MRC. Support KVO.
+ Worked for both ARC and MRC. Support KVO. NOT support KVC, weak(id, block).
 
  USAGE:
 
@@ -80,8 +78,7 @@
 
      @end
 
- *************************************************************************
- */
+***************************************************************************/
 
 
 #import <Foundation/Foundation.h>
@@ -90,11 +87,9 @@
 
 #if __has_feature(objc_arc)
 #define TZWEAK_DEFINITION   weak
-#define TZWEAK_KEYWORD      __weak
 #define TZRelease(obj)      /*!!! do nothing */
 #else
 #define TZWEAK_DEFINITION   assign
-#define TZWEAK_KEYWORD      __unsafe_unretained
 #define TZRelease(obj)      [(obj) release]
 #endif
 
@@ -190,7 +185,9 @@ void *prefix##varName##Key = &prefix##varName##Key;\
             NSLog(@"-[%@ copyWithZone:] need to be implemented.", [varName class]);\
             return;\
         }\
-        objc_setAssociatedObject(self, prefix##varName##Key, [varName copy], OBJC_ASSOCIATION_RETAIN_NONATOMIC);\
+        varType copyObject = [varName copy];\
+        objc_setAssociatedObject(self, prefix##varName##Key, copyObject, OBJC_ASSOCIATION_RETAIN_NONATOMIC);\
+        TZRelease(copyObject);\
     }\
     [self didChangeValueForKey:propertyKey];\
 }

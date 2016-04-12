@@ -13,6 +13,14 @@
 		BA332D9C1CB645AA00F5F2C7 /* CategoryUtility_WeakExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = BA332D981CB645AA00F5F2C7 /* CategoryUtility_WeakExtension.m */; };
 		BA832BE51CAE5A670056DFD9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA832BE41CAE5A670056DFD9 /* main.m */; };
 		BA8D10C91CB4FE440030807C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BA832BE41CAE5A670056DFD9 /* main.m */; };
+		BAE37AD11CBCAA8C000E7A67 /* NSObject_Demo.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE37AD01CBCAA8C000E7A67 /* NSObject_Demo.m */; };
+		BAE37AD21CBCAA8C000E7A67 /* NSObject_Demo.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE37AD01CBCAA8C000E7A67 /* NSObject_Demo.m */; };
+		BAE37AD51CBCACD4000E7A67 /* MyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE37AD41CBCACD4000E7A67 /* MyObject.m */; };
+		BAE37AD61CBCACD4000E7A67 /* MyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE37AD41CBCACD4000E7A67 /* MyObject.m */; };
+		BAE37AD91CBCD42C000E7A67 /* TestFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE37AD81CBCD42C000E7A67 /* TestFunctions.m */; };
+		BAE37ADA1CBCD42C000E7A67 /* TestFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE37AD81CBCD42C000E7A67 /* TestFunctions.m */; };
+		BAE37ADD1CBCD48C000E7A67 /* NSObject_Model.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE37ADC1CBCD48C000E7A67 /* NSObject_Model.m */; };
+		BAE37ADE1CBCD48C000E7A67 /* NSObject_Model.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE37ADC1CBCD48C000E7A67 /* NSObject_Model.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +52,15 @@
 		BA832BE11CAE5A670056DFD9 /* Demo_mrc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Demo_mrc; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA832BE41CAE5A670056DFD9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BA8D10CF1CB4FE440030807C /* Demo_arc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Demo_arc; sourceTree = BUILT_PRODUCTS_DIR; };
+		BAE37ACF1CBCAA8C000E7A67 /* NSObject_Demo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSObject_Demo.h; sourceTree = "<group>"; };
+		BAE37AD01CBCAA8C000E7A67 /* NSObject_Demo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSObject_Demo.m; sourceTree = "<group>"; };
+		BAE37AD31CBCACD4000E7A67 /* MyObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyObject.h; sourceTree = "<group>"; };
+		BAE37AD41CBCACD4000E7A67 /* MyObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyObject.m; sourceTree = "<group>"; };
+		BAE37AD71CBCD42C000E7A67 /* TestFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFunctions.h; sourceTree = "<group>"; };
+		BAE37AD81CBCD42C000E7A67 /* TestFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestFunctions.m; sourceTree = "<group>"; };
+		BAE37ADB1CBCD48C000E7A67 /* NSObject_Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSObject_Model.h; sourceTree = "<group>"; };
+		BAE37ADC1CBCD48C000E7A67 /* NSObject_Model.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSObject_Model.m; sourceTree = "<group>"; };
+		BAE37ADF1CBCE7F6000E7A67 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +114,15 @@
 			children = (
 				BA332D941CB645AA00F5F2C7 /* CategoryUtility */,
 				BA832BE41CAE5A670056DFD9 /* main.m */,
+				BAE37ADB1CBCD48C000E7A67 /* NSObject_Model.h */,
+				BAE37ADC1CBCD48C000E7A67 /* NSObject_Model.m */,
+				BAE37AD31CBCACD4000E7A67 /* MyObject.h */,
+				BAE37AD41CBCACD4000E7A67 /* MyObject.m */,
+				BAE37AD71CBCD42C000E7A67 /* TestFunctions.h */,
+				BAE37AD81CBCD42C000E7A67 /* TestFunctions.m */,
+				BAE37ACF1CBCAA8C000E7A67 /* NSObject_Demo.h */,
+				BAE37AD01CBCAA8C000E7A67 /* NSObject_Demo.m */,
+				BAE37ADF1CBCE7F6000E7A67 /* PrefixHeader.pch */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -177,7 +203,11 @@
 			files = (
 				BA332D9B1CB645AA00F5F2C7 /* CategoryUtility_WeakExtension.m in Sources */,
 				BA332D991CB645AA00F5F2C7 /* CategoryUtility.m in Sources */,
+				BAE37ADD1CBCD48C000E7A67 /* NSObject_Model.m in Sources */,
+				BAE37AD11CBCAA8C000E7A67 /* NSObject_Demo.m in Sources */,
 				BA832BE51CAE5A670056DFD9 /* main.m in Sources */,
+				BAE37AD51CBCACD4000E7A67 /* MyObject.m in Sources */,
+				BAE37AD91CBCD42C000E7A67 /* TestFunctions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,7 +217,11 @@
 			files = (
 				BA332D9C1CB645AA00F5F2C7 /* CategoryUtility_WeakExtension.m in Sources */,
 				BA332D9A1CB645AA00F5F2C7 /* CategoryUtility.m in Sources */,
+				BAE37ADE1CBCD48C000E7A67 /* NSObject_Model.m in Sources */,
+				BAE37AD21CBCAA8C000E7A67 /* NSObject_Demo.m in Sources */,
 				BA8D10C91CB4FE440030807C /* main.m in Sources */,
+				BAE37AD61CBCACD4000E7A67 /* MyObject.m in Sources */,
+				BAE37ADA1CBCD42C000E7A67 /* TestFunctions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +313,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Demo/PrefixHeader.pch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -287,6 +323,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Demo/PrefixHeader.pch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -295,6 +333,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Demo/PrefixHeader.pch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -303,6 +343,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Demo/PrefixHeader.pch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

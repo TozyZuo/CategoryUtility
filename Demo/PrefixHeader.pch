@@ -1,0 +1,20 @@
+//
+//  PrefixHeader.pch
+//  Demo
+//
+//  Created by TozyZuo on 16/4/12.
+//  Copyright © 2016年 TozyZuo. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+//#define TESTPERFORMANCE
+
+// turn off NSLog
+#if defined(TESTPERFORMANCE)
+#define NSLog(...)
+#endif
+
+
+#endif /* PrefixHeader_pch */

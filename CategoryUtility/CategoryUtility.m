@@ -2,7 +2,6 @@
 //  CategoryUtility.m
 //
 //  Created by TozyZuo.
-//  Copyright © 2014年 TozyZuo. All rights reserved.
 //
 
 #import "CategoryUtility.h"
@@ -12,10 +11,13 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        NSMapTable *mapTable = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsOpaqueMemory|NSPointerFunctionsObjectPersonality valueOptions:NSPointerFunctionsStrongMemory|NSPointerFunctionsObjectPersonality capacity:1];
+
+        NSPointerFunctionsOptions weakoptions = NSPointerFunctionsOpaqueMemory|NSPointerFunctionsObjectPersonality;
+
+        NSMapTable *mapTable = [[NSMapTable alloc] initWithKeyOptions:weakoptions valueOptions:NSPointerFunctionsStrongMemory|NSPointerFunctionsObjectPersonality capacity:1];
         self.owners = mapTable;
 
-        NSHashTable *hashTable = [[NSHashTable alloc] initWithOptions:NSPointerFunctionsOpaqueMemory|NSPointerFunctionsObjectPersonality capacity:1];
+        NSHashTable *hashTable = [[NSHashTable alloc] initWithOptions:weakoptions capacity:1];
         self.objectObservers = hashTable;
 
 #if !__has_feature(objc_arc)
@@ -32,7 +34,12 @@
         NSMutableArray *properties = [self.owners objectForKey:owner];
         // owner.property = nil.
         for (NSString *property in properties) {
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
             [owner performSelector:NSSelectorFromString([NSString stringWithFormat:@"set%@:", property]) withObject:nil];
+#pragma clang diagnostic pop
+
             // @TODO
             // Can't use KVC.
 //            [owner setValue:nil forKey:key];
