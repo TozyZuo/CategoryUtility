@@ -50,9 +50,9 @@
      @interface NSString (MyCategory)
 
      @property (nonatomic, readonly) NSString *  encryptedString;
-     @Property__nonatomic___strong__(id,         idProperty);
+     @Property__nonatomic___strong__(    id    , idProperty);
      @Property__nonatomic____weak___(NSObject *, weakProperty);
-     @property (nonatomic,  assign ) float       floatProperty;
+     @property (nonatomic,  assign )    float    floatProperty;
 
      @end
 
