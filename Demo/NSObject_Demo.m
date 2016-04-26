@@ -139,9 +139,7 @@ void *NSObject_DemoweakPropertyKey = &NSObject_DemoweakPropertyKey;
                 self.observer = selfObserver;
                 TZRelease(selfObserver);
             }
-            if (![selfObserver.objectObservers containsObject:objectObserver]) {
-                [selfObserver.objectObservers addObject:objectObserver];
-            }
+            [selfObserver.objectObservers addObject:objectObserver];
         }
         objc_setAssociatedObject(self, NSObject_DemoweakPropertyKey, weakProperty, OBJC_ASSOCIATION_ASSIGN);
     }

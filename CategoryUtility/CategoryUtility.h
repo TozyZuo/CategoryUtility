@@ -314,9 +314,7 @@ void *prefix##varName##Key = &prefix##varName##Key;\
                 self.observer = selfObserver;\
                 TZRelease(selfObserver);\
             }\
-            if (![selfObserver.objectObservers containsObject:objectObserver]) {\
-                [selfObserver.objectObservers addObject:objectObserver];\
-            }\
+            [selfObserver.objectObservers addObject:objectObserver];\
         }\
         objc_setAssociatedObject(self, prefix##varName##Key, varName, OBJC_ASSOCIATION_ASSIGN);\
     }\
